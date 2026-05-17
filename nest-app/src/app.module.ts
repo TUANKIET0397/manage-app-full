@@ -17,6 +17,7 @@ import { ReviewsModule } from './modules/reviews/reviews.module';
 
 //schemas, import dùng để tạo các mô hình dữ liệu trong MongoDB thông qua Mongoose,
 //  giúp định nghĩa cấu trúc và kiểu dữ liệu của các tài liệu trong cơ sở dữ liệu.
+// sau khi định nghĩa các schema, khai báo chúng trong AppModule để có thể sử dụng chúng trong toàn bộ ứng dụng NestJS của bạn.
 @Module({
   imports: [
     UsersModule,
