@@ -14,7 +14,6 @@ import { OrderDetailModule } from './modules/order.detail/order.detail.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { RestaurantsModule } from './modules/restaurants/restaurants.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
-import { Like } from './modules/likes/schemas/like.schema';
 
 //schemas, import dùng để tạo các mô hình dữ liệu trong MongoDB thông qua Mongoose,
 //  giúp định nghĩa cấu trúc và kiểu dữ liệu của các tài liệu trong cơ sở dữ liệu.
