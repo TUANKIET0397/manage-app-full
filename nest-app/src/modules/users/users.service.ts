@@ -6,6 +6,7 @@ import { Model } from 'mongoose';
 import { User } from './schemas/user.schema';
 import { hashPasswordHelper } from '@/helpers/utils';
 import aqp from 'api-query-params';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class UsersService {
@@ -21,7 +22,7 @@ export class UsersService {
   };
 
   async create(createUserDto: CreateUserDto) {
-    const { name, email, password } = createUserDto;
+    const { name, email, password, phone, address, image } = createUserDto;
     // kiểm tra xem email đã tồn tại hay chưa, nếu đã tồn tại thì sẽ trả về lỗi, ngược lại sẽ tiếp tục tạo mới người dùng
     const isExist = await this.isEmailExist(email);
     if (isExist) {
@@ -41,6 +42,9 @@ export class UsersService {
       name,
       email,
       password: hashPassword,
+      phone,
+      address,
+      image,
     });
     return {
       _id: user._id,
@@ -72,12 +76,16 @@ export class UsersService {
       .skip(skip) // skip là số phần tử cần bỏ qua, nó sẽ giúp cho việc phân trang trở nên dễ dàng hơn và hiệu quả hơn khi truy vấn database. Nếu không có skip thì sẽ trả về tất cả các phần tử trong database, điều này sẽ gây ra vấn đề về hiệu suất khi truy vấn database, đặc biệt là khi có nhiều phần tử trong database. Việc sử dụng skip giúp cho việc phân trang trở nên hiệu quả hơn khi truy vấn database, vì nó chỉ trả về các phần tử cần thiết cho trang hiện tại, thay vì trả về tất cả các phần tử trong database.
       .select('-password') // loại bỏ trường password khi trả về kết quả cho client, để đảm bảo an toàn thông tin của người dùng
       .sort(sort as any); // sort là các điều kiện để sắp xếp kết quả trả về, nó sẽ được chuyển đổi từ query của client, ví dụ như sort=-timestamp sẽ được chuyển đổi thành các điều kiện để sắp xếp kết quả trả về, sau đó sẽ trả về kết quả cho client. Nếu không có sort thì sẽ trả về kết quả theo thứ tự mặc định của database
-
     return { results, totalPages }; // trả về kết quả cho client, bao gồm kết quả và tổng số trang, để client có thể hiển thị kết quả một cách chính xác và đầy đủ thông tin. Việc trả về tổng số trang giúp cho việc phân trang trở nên dễ dàng hơn và hiệu quả hơn khi hiển thị kết quả cho client.
   }
 
   findOne(id: number) {
     return `This action returns a #${id} user`;
+  }
+
+  //bth có thể custom tìm theo email hoặc phone number
+  async findByEmail(email: string) {
+    return await this.userModel.findOne({ email });
   }
 
   async update(updateUserDto: UpdateUserDto) {
@@ -89,7 +97,20 @@ export class UsersService {
     );
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(_id: string) {
+    //check _id
+    if (mongoose.isValidObjectId(_id)) {
+      return this.userModel.deleteOne({ _id: _id });
+    } else {
+      throw new BadGatewayException(`_id: ${_id} is not format mongodb`);
+    }
   }
+  // có 2 cách:
+  // có thể ở bên dto giống updateUserDto để validate bên Dto
+  // hoặc có thể validate trực tiếp ở đây, nhưng cách này sẽ làm cho code trở nên rối hơn và khó bảo trì hơn,
+  // vì nó sẽ làm cho service trở nên phức tạp hơn và khó đọc hơn, đặc biệt là khi có nhiều trường cần validate.
+  // Việc validate trực tiếp ở service cũng sẽ làm cho việc tái sử dụng code trở nên khó khăn hơn,
+  // vì nếu có một trường cần validate giống nhau ở nhiều nơi trong service thì sẽ phải viết lại code validate đó ở nhiều nơi,
+  //  điều này sẽ làm cho code trở nên rối hơn và khó bảo trì hơn.
+  //  Do đó, việc validate trực tiếp ở service không phải là một cách tốt để xử lý việc validate dữ liệu trong NestJS.
 }

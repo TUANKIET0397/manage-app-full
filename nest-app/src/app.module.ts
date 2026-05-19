@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './modules/users/users.module';
 
-// modules 
+// modules
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { LikesModule } from './modules/likes/likes.module';
@@ -14,6 +14,7 @@ import { OrderDetailModule } from './modules/order.detail/order.detail.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { RestaurantsModule } from './modules/restaurants/restaurants.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
+import { AuthModule } from './auth/auth.module';
 
 //schemas, import dùng để tạo các mô hình dữ liệu trong MongoDB thông qua Mongoose,
 //  giúp định nghĩa cấu trúc và kiểu dữ liệu của các tài liệu trong cơ sở dữ liệu.
@@ -29,31 +30,27 @@ import { ReviewsModule } from './modules/reviews/reviews.module';
     OrdersModule,
     RestaurantsModule,
     ReviewsModule,
-  // cấu hình kết nối đến MongoDB bằng cách sử dụng MongooseModule.forRootAsync() và ConfigModule để lấy URI từ biến môi trường.
-  ConfigModule.forRoot({ isGlobal: true }),
-  MongooseModule.forRootAsync({
-  imports: [ConfigModule],
-    useFactory: async (configService: ConfigService) => ({
-      uri: configService.get<string>('MONGODB_URI'),
-  }),
-  inject: [ConfigService],
-  }),
-  ReviewsModule,
-  OrdersModule,
-  OrderDetailModule,
-  MenusModule,
-  MenuItemsModule,
-  MenuItemOptionsModule,
-  LikesModule,
-  RestaurantsModule
+    // cấu hình kết nối đến MongoDB bằng cách sử dụng MongooseModule.forRootAsync() và ConfigModule để lấy URI từ biến môi trường.
+    ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_URI'),
+      }),
+      inject: [ConfigService],
+    }),
+    ReviewsModule,
+    OrdersModule,
+    OrderDetailModule,
+    MenusModule,
+    MenuItemsModule,
+    MenuItemOptionsModule,
+    LikesModule,
+    RestaurantsModule,
+    AuthModule,
   ],
-    
+
   controllers: [AppController],
   providers: [AppService],
-  
-}
-
-)
-
-
+})
 export class AppModule {}

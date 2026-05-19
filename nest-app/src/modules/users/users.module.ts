@@ -11,5 +11,6 @@ import { User, UserSchema } from './schemas/user.schema';
   ],
   controllers: [UsersController],
   providers: [UsersService],
+  exports: [UsersService], //export UsersService để có thể sử dụng trong các module khác, ví dụ như AuthModule để xác thực người dùng khi đăng nhập, hoặc các module khác cần truy cập thông tin người dùng để thực hiện các thao tác liên quan đến người dùng.
 })
 export class UsersModule {}
