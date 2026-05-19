@@ -11,7 +11,7 @@ import aqp from 'api-query-params';
 export class UsersService {
   constructor(
     @InjectModel(User.name)
-    private userModel: Model<User>,
+    private userModel: Model<User>, //userModel là một instance của Model<User>, nó sẽ được sử dụng để truy vấn database, ví dụ như tạo mới người dùng, lấy danh sách người dùng, cập nhật người dùng và xóa người dùng. Việc sử dụng @InjectModel(User.name) giúp cho việc inject model trở nên dễ dàng hơn và đảm bảo rằng model được inject đúng với tên của schema đã định nghĩa.
   ) {}
 
   isEmailExist = async (email: string) => {
@@ -69,19 +69,24 @@ export class UsersService {
     const results = await this.userModel
       .find(filter) // filter là các điều kiện để truy vấn database, nó sẽ được chuyển đổi từ query của client, ví dụ như status=sent&timestamp>2016-01-01&author.firstName=/john/i sẽ được chuyển đổi thành các điều kiện để truy vấn database, sau đó sẽ trả về kết quả cho client.
       .limit(pageSize) // giới hạn số lượng phần tử trả về, để tránh trả về quá nhiều phần tử trong một lần truy vấn, điều này giúp cho việc phân trang trở nên hiệu quả hơn khi truy vấn database. Nếu không có limit thì sẽ trả về tất cả các phần tử trong database
-      .skip(skip) // skip là số phần tử cần bỏ qua, nó sẽ giúp cho việc phân trang trở nên dễ dàng hơn và hiệu quả hơn khi truy vấn database. Nếu không có skip thì sẽ trả về tất cả các phần tử trong database, điều
+      .skip(skip) // skip là số phần tử cần bỏ qua, nó sẽ giúp cho việc phân trang trở nên dễ dàng hơn và hiệu quả hơn khi truy vấn database. Nếu không có skip thì sẽ trả về tất cả các phần tử trong database, điều này sẽ gây ra vấn đề về hiệu suất khi truy vấn database, đặc biệt là khi có nhiều phần tử trong database. Việc sử dụng skip giúp cho việc phân trang trở nên hiệu quả hơn khi truy vấn database, vì nó chỉ trả về các phần tử cần thiết cho trang hiện tại, thay vì trả về tất cả các phần tử trong database.
       .select('-password') // loại bỏ trường password khi trả về kết quả cho client, để đảm bảo an toàn thông tin của người dùng
       .sort(sort as any); // sort là các điều kiện để sắp xếp kết quả trả về, nó sẽ được chuyển đổi từ query của client, ví dụ như sort=-timestamp sẽ được chuyển đổi thành các điều kiện để sắp xếp kết quả trả về, sau đó sẽ trả về kết quả cho client. Nếu không có sort thì sẽ trả về kết quả theo thứ tự mặc định của database
 
-    return { results, totalPages };
+    return { results, totalPages }; // trả về kết quả cho client, bao gồm kết quả và tổng số trang, để client có thể hiển thị kết quả một cách chính xác và đầy đủ thông tin. Việc trả về tổng số trang giúp cho việc phân trang trở nên dễ dàng hơn và hiệu quả hơn khi hiển thị kết quả cho client.
   }
 
   findOne(id: number) {
     return `This action returns a #${id} user`;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(updateUserDto: UpdateUserDto) {
+    return await this.userModel.updateOne(
+      { _id: updateUserDto._id }, //Điều kiện để tìm kiếm người dùng cần cập nhật, ở đây mình sẽ tìm kiếm người dùng theo _id, vì _id là duy nhất nên sẽ trả về đúng một người dùng cần cập nhật
+      { ...updateUserDto }, // dùng tạm thời, sau này chỉ những trường nào muốn update thì mới truyền vào đây, để tránh việc cập nhật những trường không cần thiết, ví dụ như email hoặc password, vì những trường này sẽ có những logic riêng khi cập nhật, ví dụ như khi cập nhật email thì cần phải kiểm tra xem email mới đã tồn tại hay chưa, nếu đã tồn tại thì sẽ trả về lỗi, ngược lại sẽ tiếp tục cập nhật email mới cho người dùng. Tương tự như vậy đối với password, khi cập nhật password thì cần phải hash password mới trước khi lưu vào database để đảm bảo an toàn thông tin của người dùng.
+      // ví dụ code sau này sẽ chỉ cập nhật trường name, phone, address và image, còn các trường khác sẽ không bị ảnh hưởng khi cập nhật thông tin người dùng
+      // { name: updateUserDto.name, phone: updateUserDto.phone, address: updateUserDto.address, image: updateUserDto.image }
+    );
   }
 
   remove(id: number) {

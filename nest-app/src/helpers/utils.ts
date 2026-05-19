@@ -1,4 +1,5 @@
-import bcrypt from 'bcrypt';
+// import bcrypt from 'bcrypt';
+const bcrypt = require('bcrypt');
 const saltRounds = 10; //độ mạnh
 
 export const hashPasswordHelper = async (plainPassword: string) => {
