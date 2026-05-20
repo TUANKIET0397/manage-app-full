@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './passport/local-auth.guard';
+import { JwtAuthGuard } from './passport/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -21,6 +22,13 @@ export class AuthController {
   handleLogin(@Request() req) {
     return this.authService.login(req.user);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(@Request() req) {
+    return req.user;
+  }
+
   // create(@Body() createAuthDto: CreateAuthDto) {
   // return this.authService.signIn(
   //   createAuthDto.username,
