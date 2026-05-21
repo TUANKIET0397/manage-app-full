@@ -17,6 +17,7 @@ import { ReviewsModule } from './modules/reviews/reviews.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core/constants';
 import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 //schemas, import dùng để tạo các mô hình dữ liệu trong MongoDB thông qua Mongoose,
 //  giúp định nghĩa cấu trúc và kiểu dữ liệu của các tài liệu trong cơ sở dữ liệu.
@@ -32,6 +33,7 @@ import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
     OrdersModule,
     RestaurantsModule,
     ReviewsModule,
+    AuthModule,
     // cấu hình kết nối đến MongoDB bằng cách sử dụng MongooseModule.forRootAsync() và ConfigModule để lấy URI từ biến môi trường.
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRootAsync({
@@ -39,17 +41,36 @@ import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('MONGODB_URI'),
       }),
+      inject: [ConfigService], //
+    }),
+    // cấu hình MailerModule để gửi email thông qua SMTP, sử dụng Handlebars làm template engine để tạo nội dung email động.
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        transport: {
+          service: 'gmail',
+          host: 'smtp.gmail.com',
+          port: 587,
+          secure: false,
+
+          auth: {
+            user: configService.get<string>('SMTP_USER'),
+            pass: configService.get<string>('SMTP_PASS'),
+          },
+        },
+        defaults: {
+          from: '"No Reply" <noreply@example.com>',
+        },
+        // template: {
+        //   dir: __dirname + '/templates',
+        //   adapter: new HandlebarsAdapter(),
+        //   options: {
+        //     strict: true,
+        //   },
+        // },
+      }),
       inject: [ConfigService],
     }),
-    ReviewsModule,
-    OrdersModule,
-    OrderDetailModule,
-    MenusModule,
-    MenuItemsModule,
-    MenuItemOptionsModule,
-    LikesModule,
-    RestaurantsModule,
-    AuthModule,
   ],
 
   controllers: [AppController],
