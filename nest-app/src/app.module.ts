@@ -18,6 +18,8 @@ import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core/constants';
 import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/adapters/handlebars.adapter';
+import { join } from 'path';
 
 //schemas, import dùng để tạo các mô hình dữ liệu trong MongoDB thông qua Mongoose,
 //  giúp định nghĩa cấu trúc và kiểu dữ liệu của các tài liệu trong cơ sở dữ liệu.
@@ -52,7 +54,6 @@ import { MailerModule } from '@nestjs-modules/mailer';
           host: 'smtp.gmail.com',
           port: 587,
           secure: false,
-
           auth: {
             user: configService.get<string>('SMTP_USER'),
             pass: configService.get<string>('SMTP_PASS'),
@@ -61,13 +62,13 @@ import { MailerModule } from '@nestjs-modules/mailer';
         defaults: {
           from: '"No Reply" <noreply@example.com>',
         },
-        // template: {
-        //   dir: __dirname + '/templates',
-        //   adapter: new HandlebarsAdapter(),
-        //   options: {
-        //     strict: true,
-        //   },
-        // },
+        template: {
+          dir: join(__dirname, 'mail/templates'),
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true,
+          },
+        },
       }),
       inject: [ConfigService],
     }),

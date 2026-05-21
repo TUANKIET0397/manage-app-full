@@ -11,11 +11,14 @@ import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 
+import { MailerService } from '@nestjs-modules/mailer';
+
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<User>, //userModel là một instance của Model<User>, nó sẽ được sử dụng để truy vấn database, ví dụ như tạo mới người dùng, lấy danh sách người dùng, cập nhật người dùng và xóa người dùng. Việc sử dụng @InjectModel(User.name) giúp cho việc inject model trở nên dễ dàng hơn và đảm bảo rằng model được inject đúng với tên của schema đã định nghĩa.
+    private readonly mailerService: MailerService,
   ) {}
 
   isEmailExist = async (email: string) => {
@@ -128,21 +131,31 @@ export class UsersService {
 
     // hash password
     const hashPassword = await hashPasswordHelper(password);
+    const codeId = uuidv4(); // tạo một mã xác nhận duy nhất cho người dùng mới đăng ký, để sử dụng trong quá trình kích hoạt tài khoản, giúp đảm bảo an toàn thông tin của người dùng và tránh việc sử dụng mã xác nhận cũ để kích hoạt tài khoản sau khi đã hết hạn.
     const user = await this.userModel.create({
       name,
       email,
       password: hashPassword,
       isActive: false,
-      codeId: uuidv4(),
+      codeId: codeId,
       codeExpired: dayjs().add(1, 'minute').toDate(), // mã xác nhận sẽ hết hạn sau 1 ngày kể từ khi tạo mới người dùng, để đảm bảo an toàn thông tin của người dùng và tránh việc sử dụng mã xác nhận cũ để kích hoạt tài khoản sau khi đã hết hạn.
     });
 
+    //send email to user - bất đồng bộ
+    // logic gửi email xác nhận đăng ký tài khoản mới cho người dùng, có thể sử dụng một service riêng để gửi email, sau đó inject vào đây để sử dụng, nhưng ở đây mình sẽ viết trực tiếp ở đây luôn, để đơn giản hóa code.
+    // ví dụ code gửi email xác nhận đăng ký tài khoản mới cho người dùng sẽ được viết ở đây, sau khi tạo mới người dùng thành công, thì sẽ gửi email xác nhận đăng ký tài khoản mới cho người dùng, để thông báo cho người dùng biết rằng họ đã đăng ký tài khoản thành công và có thể sử dụng tài khoản của mình để đăng nhập vào hệ thống.
+    this.mailerService.sendMail({
+      to: user.email,
+      subject: 'Activate your account at @TuanKietCoder',
+      template: 'register',
+      context: {
+        name: user?.name ?? user.email, // nếu có name thì sẽ hiển thị name, ngược lại sẽ hiển thị email, để đảm bảo rằng email xác nhận đăng ký tài khoản mới sẽ được gửi đến đúng người dùng đã đăng ký tài khoản mới, ngay cả khi người dùng không cung cấp name khi đăng ký tài khoản mới.
+        activationCode: codeId,
+      },
+    });
     //trả ra phản hồi
     return {
       _id: user._id,
     };
-    //send email to user - bất đồng bộ
-    // logic gửi email xác nhận đăng ký tài khoản mới cho người dùng, có thể sử dụng một service riêng để gửi email, sau đó inject vào đây để sử dụng, nhưng ở đây mình sẽ viết trực tiếp ở đây luôn, để đơn giản hóa code.
-    // ví dụ code gửi email xác nhận đăng ký tài khoản mới cho người dùng sẽ được viết ở đây, sau khi tạo mới người dùng thành công, thì sẽ gửi email xác nhận đăng ký tài khoản mới cho người dùng, để thông báo cho người dùng biết rằng họ đã đăng ký tài khoản thành công và có thể sử dụng tài khoản của mình để đăng nhập vào hệ thống.
   }
 }

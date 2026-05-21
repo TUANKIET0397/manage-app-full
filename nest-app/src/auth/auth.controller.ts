@@ -40,10 +40,14 @@ export class AuthController {
   async testMail() {
     await this.mailerService.sendMail({
       to: 'kiet8103@gmail.com',
-      from: 'noreply@example.com',
-      subject: 'Hello World',
-      text: 'Plain text content',
-      html: '<b>HTML content</b>',
+      subject: 'Testing Nest MailerModule ✔',
+      text: 'Welcome',
+      // html: '<b>hello world with TuanKietCoder</b>',
+      template: 'register',
+      context: {
+        name: 'TuanKietCoder',
+        activationCode: 123456,
+      },
     });
     return 'ok';
   }
