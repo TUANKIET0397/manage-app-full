@@ -7,6 +7,9 @@ import { User } from './schemas/user.schema';
 import { hashPasswordHelper } from '@/helpers/utils';
 import aqp from 'api-query-params';
 import mongoose from 'mongoose';
+import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
+import { v4 as uuidv4 } from 'uuid';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class UsersService {
@@ -113,4 +116,33 @@ export class UsersService {
   // vì nếu có một trường cần validate giống nhau ở nhiều nơi trong service thì sẽ phải viết lại code validate đó ở nhiều nơi,
   //  điều này sẽ làm cho code trở nên rối hơn và khó bảo trì hơn.
   //  Do đó, việc validate trực tiếp ở service không phải là một cách tốt để xử lý việc validate dữ liệu trong NestJS.
+
+  async handleRegister(registerDto: CreateAuthDto) {
+    const { name, email, password } = registerDto;
+
+    //check email
+    const isExist = await this.isEmailExist(email);
+    if (isExist) {
+      throw new BadGatewayException(`Email: ${email} already exists`);
+    }
+
+    // hash password
+    const hashPassword = await hashPasswordHelper(password);
+    const user = await this.userModel.create({
+      name,
+      email,
+      password: hashPassword,
+      isActive: false,
+      codeId: uuidv4(),
+      codeExpired: dayjs().add(1, 'minute').toDate(), // mã xác nhận sẽ hết hạn sau 1 ngày kể từ khi tạo mới người dùng, để đảm bảo an toàn thông tin của người dùng và tránh việc sử dụng mã xác nhận cũ để kích hoạt tài khoản sau khi đã hết hạn.
+    });
+
+    //trả ra phản hồi
+    return {
+      _id: user._id,
+    };
+    //send email to user - bất đồng bộ
+    // logic gửi email xác nhận đăng ký tài khoản mới cho người dùng, có thể sử dụng một service riêng để gửi email, sau đó inject vào đây để sử dụng, nhưng ở đây mình sẽ viết trực tiếp ở đây luôn, để đơn giản hóa code.
+    // ví dụ code gửi email xác nhận đăng ký tài khoản mới cho người dùng sẽ được viết ở đây, sau khi tạo mới người dùng thành công, thì sẽ gửi email xác nhận đăng ký tài khoản mới cho người dùng, để thông báo cho người dùng biết rằng họ đã đăng ký tài khoản thành công và có thể sử dụng tài khoản của mình để đăng nhập vào hệ thống.
+  }
 }

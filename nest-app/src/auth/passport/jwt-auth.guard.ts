@@ -1,15 +1,30 @@
+import { IS_PUBLIC_KEY } from '@/decorator/customize';
 import {
   ExecutionContext,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 
+// Có thể hiểu là chúng ta có sử dụng cái active này không
+// nếu canActivate return true thì không bật chế độ bộ vệ
+// nếu canActivate return false thì phải chạy guard
 @Injectable()
 export class JwtAuthGuard extends AuthGuard(
   'Access Token is not valid, not have in header',
 ) {
+  constructor(private reflector: Reflector) {
+    super();
+  }
   canActivate(context: ExecutionContext) {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (isPublic) {
+      return true;
+    }
     // Add your custom authentication logic here có nghĩa là thêm logic xác thực tùy chỉnh của bạn ở đây
     // for example, call super.logIn(request) to establish a session có nghĩa là ví dụ, gọi super.logIn(request) để thiết lập một phiên làm việc
     // ví dụ const request = context.switchToHttp().getRequest();
