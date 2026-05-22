@@ -1,19 +1,26 @@
 "use client"
 
 import { Layout } from "antd"
-const AdminContent = ({ children }: { children: React.ReactNode }) => {
+
+const AdminContent = ({
+    children,
+}: Readonly<{
+    children: React.ReactNode
+}>) => {
     const { Content } = Layout
+
     return (
-        <Content
-            style={{
-                margin: "24px 16px",
-                padding: 24,
-                minHeight: 280,
-                background: "#ccc",
-                borderRadius: "#ccc",
-            }}
-        >
-            {children}
+        <Content>
+            <div
+                style={{
+                    padding: 24,
+                    minHeight: "calc(100vh - 180px)",
+                    // background: "#ccc",
+                    // borderRadius: "#ccc",
+                }}
+            >
+                {children}
+            </div>
         </Content>
     )
 }

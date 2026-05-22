@@ -1,15 +1,32 @@
-import Image from 'next/image';
-import { Button } from 'antd';
+import HomePage from "@/components/layout/homepage"
 
 export default function Page() {
-  return (
-    <>
-        <h1>Hello, Next.js!</h1>
-
+    return (
         <div>
-          <Button type="primary" >Click me</Button>
+            <HomePage />
         </div>
-        <Image src="/img.png" loading="eager" alt="Description of image" width={300} height={300} />
-    </>
-  )
+        // <>
+        //     <h1
+        //         style={{
+        //             display: "flex",
+        //             alignItems: "center",
+        //             flexDirection: "column",
+        //             paddingTop: "200px",
+        //         }}
+        //     >
+        //         Hello, I'm Tuan Kiet, a full-stack developer
+        //         <Button
+        //             type="link"
+        //             href="https://github.com/TUANKIET0397"
+        //             target="_blank"
+        //             style={{
+        //                 fontSize: "20px",
+        //                 marginTop: "10px",
+        //             }}
+        //         >
+        //             If you want to find me, click here!
+        //         </Button>
+        //     </h1>
+        // </>
+    )
 }
