@@ -2,6 +2,7 @@ import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import { InactiveAccountError, InvalidEmailPasswordError } from "./utils/errors"
 import { sendRequest } from "./utils/api"
+import { IUser } from "./types/next-auth"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     providers: [
@@ -75,5 +76,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     ],
     pages: {
         signIn: "/auth/login",
+    },
+    callbacks: {
+        jwt({ token, user }) {
+            if (user) {
+                // User is available during sign-in
+                token.user = user as IUser
+            }
+            return token
+        },
+        session({ session, token }) {
+            ;(session.user as IUser) = token.user
+            return session
+        },
     },
 })
