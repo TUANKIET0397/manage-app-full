@@ -9,6 +9,7 @@ const Login = () => {
         const { email, password } = values
         //trigger signIn
         const res = await authenticate(email, password)
+        console.log(">>>check data:", res)
         // const data = await signIn("credentials", {
         //     email,
         //     password,

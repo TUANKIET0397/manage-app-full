@@ -9,12 +9,25 @@ export async function authenticate(email: string, password: string) {
             // callbackUrl: "/",
             redirect: false,
         })
+        console.log(">>> check r: ", r)
         return r
     } catch (error) {
-        // if (error.cause.err instanceof InvalidLoginError) {
-        //     return { error: "Incorrect username or password" }
-        // } else {
-        //     throw new Error("Failed to authenticate")
-        // }
+        // name được lấy từ class error mà mình đã custom trong src/utils/errors.ts
+        if ((error as any).name === "InvalidEmailPasswordError") {
+            return {
+                error: (error as any).type,
+                code: 1, //ở frontend mình sẽ check code để hiển thị message tương ứng, tránh việc phải check nhiều loại error khác nhau
+            }
+        } else if ((error as any).name === "InactiveAccountError") {
+            return {
+                error: (error as any).type,
+                code: 2,
+            }
+        } else {
+            return {
+                error: "Internal server error",
+                code: 0,
+            }
+        }
     }
 }

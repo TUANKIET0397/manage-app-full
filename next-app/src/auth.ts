@@ -1,5 +1,6 @@
 import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
+import { InvalidEmailPasswordError } from "./utils/errors"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     providers: [
@@ -21,19 +22,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
                 //logic to verify if the user exists
                 //call backend
-                user = {
-                    _id: "123",
-                    username: "john_doe",
-                    email: "john.doe@example.com",
-                    isVerify: true,
-                    type: "user",
-                    role: "admin",
-                }
+                // user = {
+                //     _id: "123",
+                //     username: "john_doe",
+                //     email: "john.doe@example.com",
+                //     isVerify: true,
+                //     type: "user",
+                //     role: "admin",
+                // }
 
                 if (!user) {
-                    // No user found, so this is their first attempt to login
-                    // Optionally, this is also the place you could do a user registration
-                    throw new Error("Invalid credentials.")
+                    throw new InvalidEmailPasswordError() //out put sẽ là một object có name = "InvalidEmailPasswordError" và type = "Email/Password không hợp lệ"
+                    // return Promise.reject(new Error(" CUSTOMER MESSAGE "))
+                    // tính chất của throw là nó bắt buộc phải được bắt bởi một catch nào đó, nếu không nó sẽ làm crash ứng dụng,
+                    //  còn return thì nó chỉ trả về một giá trị nào đó mà không bắt buộc phải được bắt bởi một catch nào đó, nếu không được bắt thì nó sẽ trả về giá trị đó cho caller mà
                 }
 
                 // return user object with their profile data
