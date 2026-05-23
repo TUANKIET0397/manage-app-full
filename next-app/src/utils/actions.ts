@@ -4,12 +4,12 @@ import { signIn } from "@/auth"
 export async function authenticate(email: string, password: string) {
     try {
         const r = await signIn("credentials", {
-            username: email,
+            email: email,
             password: password,
             // callbackUrl: "/",
             redirect: false,
         })
-        console.log(">>> check r: ", r)
+        console.log(">>> check res in server: ", r)
         return r
     } catch (error) {
         // name được lấy từ class error mà mình đã custom trong src/utils/errors.ts
