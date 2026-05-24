@@ -15,11 +15,12 @@ import { OrdersModule } from './modules/orders/orders.module';
 import { RestaurantsModule } from './modules/restaurants/restaurants.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import { AuthModule } from './auth/auth.module';
-import { APP_GUARD } from '@nestjs/core/constants';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core/constants';
 import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/adapters/handlebars.adapter';
 import { join } from 'path';
+import { TransformInterceptor } from './core/transform.interceptor';
 
 //schemas, import dùng để tạo các mô hình dữ liệu trong MongoDB thông qua Mongoose,
 //  giúp định nghĩa cấu trúc và kiểu dữ liệu của các tài liệu trong cơ sở dữ liệu.
@@ -80,6 +81,10 @@ import { join } from 'path';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformInterceptor,
     },
   ],
 })

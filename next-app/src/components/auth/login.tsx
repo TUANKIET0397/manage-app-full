@@ -6,9 +6,9 @@ import { authenticate } from "@/utils/actions"
 
 const Login = () => {
     const onFinish = async (values: any) => {
-        const { email, password } = values
+        const { username, password } = values
         //trigger signIn
-        const res = await authenticate(email, password)
+        const res = await authenticate(username, password)
         console.log(">>>check data in client:", res)
         // const data = await signIn("credentials", {
         //     email,
@@ -37,7 +37,7 @@ const Login = () => {
                     >
                         <Form.Item
                             label="Email"
-                            name="email"
+                            name="username"
                             rules={[
                                 {
                                     required: true,

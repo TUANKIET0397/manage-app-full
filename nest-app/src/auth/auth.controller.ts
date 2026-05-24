@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './passport/local-auth.guard';
-import { Public } from '@/decorator/customize';
+import { Public, ResponseMessage } from '@/decorator/customize';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 
@@ -25,6 +25,7 @@ export class AuthController {
   @Post('login')
   @Public() // có nghĩa là route này sẽ không bị bảo vệ bởi JwtAuthGuard, bất kỳ ai cũng có thể truy cập vào route này mà không cần phải cung cấp token hợp lệ trong header của request.
   @UseGuards(LocalAuthGuard)
+  @ResponseMessage('Fetch login') // nó sẽ gắn metadata có key là "response_message" và value là "Fetch login" vào route handler này, sau đó mình sẽ lấy message này trong TransformInterceptor để gắn vào response trả về cho client
   handleLogin(@Request() req) {
     return this.authService.login(req.user);
   }
