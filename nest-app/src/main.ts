@@ -17,6 +17,14 @@ async function bootstrap() {
   //   allowedHeaders: 'Content-Type, Accept', // Cho phép các header cụ thể
   // });
 
+  //config cors
+  app.enableCors({
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    credentials: true,
+  });
+
   await app.listen(process.env.PORT ?? 8086);
 }
 bootstrap();

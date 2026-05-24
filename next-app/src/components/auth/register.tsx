@@ -3,9 +3,21 @@ import React from "react"
 import { Button, Col, Divider, Form, Input, notification, Row } from "antd"
 import { ArrowLeftOutlined } from "@ant-design/icons"
 import Link from "next/link"
+import { sendRequest } from "@/utils/api"
 
 const Register = () => {
-    const onFinish = async (values: any) => {}
+    const onFinish = async (values: any) => {
+        const { email, password, name } = values
+        const res = await sendRequest({
+            url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/register`,
+            method: "POST",
+            body: {
+                email,
+                password,
+                name,
+            },
+        })
+    }
 
     return (
         <Row justify={"center"} style={{ marginTop: "30px" }}>
