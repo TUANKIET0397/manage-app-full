@@ -4,6 +4,7 @@ import AdminHeader from "@/components/layout/admin.header"
 import AdminSideBar from "@/components/layout/admin.sidebar"
 import { AdminContextProvider } from "@/library/admin.context"
 import { auth } from "@/auth"
+import { redirect } from "next/navigation"
 
 const AdminLayout = async ({
     children,
@@ -14,6 +15,9 @@ const AdminLayout = async ({
     // , vì proxy chỉ dùng để xử lý các request đến server từ phía client thôi
     // chỉ cần bọc
     const session = await auth()
+    if (!session) {
+        redirect("/auth/login")
+    }
     return (
         <AdminContextProvider>
             <div style={{ display: "flex" }}>

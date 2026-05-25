@@ -19,9 +19,9 @@ const Login = () => {
                 title: "Error Login",
                 description: res?.error,
             })
-            if (res.code === 2) {
-                router.push("/verify")
-            }
+            // if (res.code === 2) {
+            //     router.push("/verify/")
+            // }
         } else {
             //redirect to dashboard
             router.push("/dashboard")

@@ -6,7 +6,7 @@ import { useContext } from "react"
 import { DownOutlined, SmileOutlined } from "@ant-design/icons"
 import type { MenuProps } from "antd"
 import { Dropdown, Space } from "antd"
-import { signOut, useSession } from "next-auth/react"
+import { signOut } from "next-auth/react"
 
 const AdminHeader = (props: any) => {
     // const { data: session, status } = useSession()
@@ -14,6 +14,11 @@ const AdminHeader = (props: any) => {
     const { session } = props
     const { Header } = Layout
     const { collapseMenu, setCollapseMenu } = useContext(AdminContext)!
+
+    const handleSignOut = async () => {
+        // await signOut({ callbackUrl: "/auth/login" })
+        await signOut()
+    }
 
     const items: MenuProps["items"] = [
         {
@@ -43,7 +48,7 @@ const AdminHeader = (props: any) => {
         {
             key: "4",
             danger: true,
-            label: <span onClick={() => signOut()}>Sign Out</span>,
+            label: <span onClick={handleSignOut}>Sign Out</span>,
         },
     ]
 
