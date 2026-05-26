@@ -84,6 +84,26 @@ const Login = () => {
                                 <Input.Password />
                             </Form.Item>
 
+                            {/* <Form.Item>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    <Button type="primary" htmlType="submit">
+                                        Login
+                                    </Button>
+                                    <Button
+                                        type="link"
+                                        onClick={() => setChangePassword(true)}
+                                    >
+                                        Quên mật khẩu ?
+                                    </Button>
+                                </div>
+                            </Form.Item> */}
+
                             <Form.Item>
                                 <Button type="primary" htmlType="submit">
                                     Login

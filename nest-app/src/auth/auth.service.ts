@@ -47,9 +47,10 @@ export class AuthService {
     return await this.usersService.handleActive(data);
   };
 
-  // retryActive = async (data: string) => {
-  //   return await this.usersService.retryActive(data);
-  // };
+  //data is email
+  retryActive = async (data: string) => {
+    return await this.usersService.retryActive(data);
+  };
 
   // retryPassword = async (data: string) => {
   //   return await this.usersService.retryPassword(data);

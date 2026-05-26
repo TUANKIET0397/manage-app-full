@@ -142,7 +142,7 @@ export class UsersService {
       password: hashPassword,
       isActive: false,
       codeId: codeId,
-      codeExpired: dayjs().add(1, 'minute').toDate(), // mã xác nhận sẽ hết hạn sau 1 ngày kể từ khi tạo mới người dùng, để đảm bảo an toàn thông tin của người dùng và tránh việc sử dụng mã xác nhận cũ để kích hoạt tài khoản sau khi đã hết hạn.
+      codeExpired: dayjs().add(5, 'minute').toDate(), // mã xác nhận sẽ hết hạn sau 5 phút kể từ khi tạo mới người dùng, để đảm bảo an toàn thông tin của người dùng và tránh việc sử dụng mã xác nhận cũ để kích hoạt tài khoản sau khi đã hết hạn.
     });
 
     //send email to user - bất đồng bộ
@@ -194,38 +194,38 @@ export class UsersService {
     }
   }
 
-  // async retryActive(email: string) {
-  //   //check email
-  //   const user = await this.userModel.findOne({ email });
+  async retryActive(email: string) {
+    //check email
+    const user = await this.userModel.findOne({ email });
 
-  //   if (!user) {
-  //     throw new BadRequestException("Tài khoản không tồn tại")
-  //   }
-  //   if (user.isActive) {
-  //     throw new BadRequestException("Tài khoản đã được kích hoạt")
-  //   }
+    if (!user) {
+      throw new BadRequestException('Tài khoản không tồn tại');
+    }
+    if (user.isActive) {
+      throw new BadRequestException('Tài khoản đã được kích hoạt');
+    }
 
-  //   //send Email
-  //   const codeId = uuidv4();
+    //send Email
+    const codeId = uuidv4();
 
-  //   //update user
-  //   await user.updateOne({
-  //     codeId: codeId,
-  //     codeExpired: dayjs().add(5, 'minutes')
-  //   })
+    //update user
+    await user.updateOne({
+      codeId: codeId,
+      codeExpired: dayjs().add(5, 'minutes'),
+    });
 
-  //   //send email
-  //   this.mailerService.sendMail({
-  //     to: user.email, // list of receivers
-  //     subject: 'Activate your account at @hoidanit', // Subject line
-  //     template: "register",
-  //     context: {
-  //       name: user?.name ?? user.email,
-  //       activationCode: codeId
-  //     }
-  //   })
-  //   return { _id: user._id }
-  // }
+    //send email
+    this.mailerService.sendMail({
+      to: user.email, // list of receivers
+      subject: 'Activate your account at  @TuanKietCoder', // Subject line
+      template: 'register',
+      context: {
+        name: user?.name ?? user.email,
+        activationCode: codeId,
+      },
+    });
+    return { _id: user._id };
+  }
 
   // async retryPassword(email: string) {
   //   //check email

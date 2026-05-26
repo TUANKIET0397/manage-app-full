@@ -14,7 +14,7 @@ const ModalReactive = (props: any) => {
     const { isModalOpen, setIsModalOpen, userEmail } = props
     const [current, setCurrent] = useState(0)
     const [form] = Form.useForm()
-    const [userId, setUserId] = useState("")
+    const [userId, setUserId] = useState("") // lấy ra userId từ user.service
 
     const hasMounted = useHasMounted()
 
@@ -62,7 +62,7 @@ const ModalReactive = (props: any) => {
             setCurrent(2)
         } else {
             notification.error({
-                message: "Call APIs error",
+                title: "Call APIs error",
                 description: res?.message,
             })
         }
