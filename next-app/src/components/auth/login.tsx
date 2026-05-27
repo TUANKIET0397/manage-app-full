@@ -7,13 +7,14 @@ import Link from "next/link"
 import { authenticate } from "@/utils/actions"
 import { useRouter } from "next/navigation"
 import ModalReactive from "./modal.reactive"
+import ModalChangePassword from "./modal.change.password"
 
 const Login = () => {
     const router = useRouter()
 
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [userEmail, setUserEmail] = useState("")
-    // const [changePassword, setChangePassword] = useState(false)
+    const [changePassword, setChangePassword] = useState(false)
 
     const onFinish = async (values: any) => {
         const { username, password } = values
@@ -105,9 +106,23 @@ const Login = () => {
                             </Form.Item> */}
 
                             <Form.Item>
-                                <Button type="primary" htmlType="submit">
-                                    Login
-                                </Button>
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    <Button type="primary" htmlType="submit">
+                                        Login
+                                    </Button>
+                                    <Button
+                                        type="link"
+                                        onClick={() => setChangePassword(true)}
+                                    >
+                                        Quên mật khẩu ?
+                                    </Button>
+                                </div>
                             </Form.Item>
                         </Form>
                         <Link href={"/"}>
@@ -125,6 +140,10 @@ const Login = () => {
                 isModalOpen={isModalOpen}
                 setIsModalOpen={setIsModalOpen}
                 userEmail={userEmail}
+            />
+            <ModalChangePassword
+                isModalOpen={changePassword}
+                setIsModalOpen={setChangePassword}
             />
         </>
     )
