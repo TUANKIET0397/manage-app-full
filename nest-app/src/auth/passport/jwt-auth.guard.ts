@@ -11,9 +11,7 @@ import { AuthGuard } from '@nestjs/passport';
 // nếu canActivate return true thì không bật chế độ bộ vệ
 // nếu canActivate return false thì phải chạy guard
 @Injectable()
-export class JwtAuthGuard extends AuthGuard(
-  'Access Token is not valid, not have in header',
-) {
+export class JwtAuthGuard extends AuthGuard('jwt') {
   constructor(private reflector: Reflector) {
     super();
   }
@@ -36,7 +34,7 @@ export class JwtAuthGuard extends AuthGuard(
   handleRequest(err, user, info) {
     // You can throw an exception based on either "info" or "err" arguments
     if (err || !user) {
-      throw err || new UnauthorizedException();
+      throw err || new UnauthorizedException(info?.message);
     }
     return user;
   }

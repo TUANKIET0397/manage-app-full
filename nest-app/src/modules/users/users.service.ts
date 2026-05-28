@@ -90,7 +90,17 @@ export class UsersService {
       .skip(skip) // skip là số phần tử cần bỏ qua, nó sẽ giúp cho việc phân trang trở nên dễ dàng hơn và hiệu quả hơn khi truy vấn database. Nếu không có skip thì sẽ trả về tất cả các phần tử trong database, điều này sẽ gây ra vấn đề về hiệu suất khi truy vấn database, đặc biệt là khi có nhiều phần tử trong database. Việc sử dụng skip giúp cho việc phân trang trở nên hiệu quả hơn khi truy vấn database, vì nó chỉ trả về các phần tử cần thiết cho trang hiện tại, thay vì trả về tất cả các phần tử trong database.
       .select('-password') // loại bỏ trường password khi trả về kết quả cho client, để đảm bảo an toàn thông tin của người dùng
       .sort(sort as any); // sort là các điều kiện để sắp xếp kết quả trả về, nó sẽ được chuyển đổi từ query của client, ví dụ như sort=-timestamp sẽ được chuyển đổi thành các điều kiện để sắp xếp kết quả trả về, sau đó sẽ trả về kết quả cho client. Nếu không có sort thì sẽ trả về kết quả theo thứ tự mặc định của database
-    return { results, totalPages }; // trả về kết quả cho client, bao gồm kết quả và tổng số trang, để client có thể hiển thị kết quả một cách chính xác và đầy đủ thông tin. Việc trả về tổng số trang giúp cho việc phân trang trở nên dễ dàng hơn và hiệu quả hơn khi hiển thị kết quả cho client.
+    //return { results, totalPages }; // trả về kết quả cho client, bao gồm kết quả và tổng số trang, để client có thể hiển thị kết quả một cách chính xác và đầy đủ thông tin. Việc trả về tổng số trang giúp cho việc phân trang trở nên dễ dàng hơn và hiệu quả hơn khi hiển thị kết quả cho client.
+
+    return {
+      meta: {
+        current: current, //trang hiện tại
+        pageSize: pageSize, //số lượng bản ghi đã lấy
+        pages: totalPages, //tổng số trang với điều kiện query
+        total: totalItems, // tổng số phần tử (số bản ghi)
+      },
+      results, //kết quả query
+    };
   }
 
   findOne(id: number) {
